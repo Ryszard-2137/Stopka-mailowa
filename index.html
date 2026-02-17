@@ -1,5 +1,24 @@
 <!DOCTYPE html>
 <html lang="pl">
+<script>
+// Najpierw pytamy o hasło
+const password = prompt("Podaj hasło, aby zobaczyć generator stopki:");
+
+if (password !== "kochamPANS") {
+    document.body.innerHTML = `
+        <h1 style="text-align:center; margin-top:100px; color:#c00;">
+            Nieprawidłowe hasło 😐<br><br>
+            Strona zostanie odświeżona po 3 sekundach...
+        </h1>
+    `;
+    setTimeout(() => location.reload(), 3000);
+} else {
+    // Hasło poprawne → normalnie ładujemy resztę strony
+    document.addEventListener("DOMContentLoaded", function() {
+        // tu nic nie trzeba – reszta strony już jest w HTML
+    });
+}
+</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,9 +51,18 @@
 
 <h2>Wygenerowana stopka:</h2>
 <div id="signatureOutput" style="padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px;"></div>
-<button onclick="copySignature()" style="padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Skopiuj Stopkę</button>
 
-<!-- Nowe przyciski z instrukcjami -->
+<div style="margin-top: 15px;">
+    <button onclick="copySignature()" style="padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer;">
+        Skopiuj Stopkę
+    </button>
+    
+    <button onclick="copySignatureAsHTML()" style="padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #2e7d32; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+        Skopiuj jako HTML
+    </button>
+</div>
+
+<!-- Przyciski z instrukcjami -->
 <a href="https://support.microsoft.com/pl-pl/office/twórca-i-dodawanie-podpisu-e-mail-w-programie-outlook-8ee5d4f4-68fd-464a-a1c1-0e1c80bb27f2#PickTab=Classic_Outlook" target="_blank" style="text-decoration: none;">
     <button style="margin-top: 10px; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer;">
         Instrukcja dodania podpisu w Outlook
@@ -83,7 +111,7 @@ function generateSignature() {
                                         <span>${position}</span>
                                     </p>
                                     <p style="margin: 0px; font-weight: 500; color: rgb(0, 0, 0); font-size: 14px; line-height: 22px;">
-                                        <span>${department}</span><span>&nbsp;|&nbsp;</span><span>Państwowa Akademia Nauk Stosowanych w Głogowie</span>
+                                        <span>${department}</span><span> | </span><span>Państwowa Akademia Nauk Stosowanych w Głogowie</span>
                                     </p>
                                     <p style="color: rgb(0, 0, 0); margin: 0px; font-size: 14px; line-height: 22px;">
                                         <span>NIP: 6932045180</span>
@@ -158,16 +186,43 @@ function generateSignature() {
     </table>`;
 
     document.getElementById("signatureOutput").innerHTML = signatureHTML;
+    
+    // Zapisujemy czysty HTML do zmiennej globalnej, żeby łatwo skopiować
+    window.currentSignatureHTML = signatureHTML.trim();
 }
 
 function copySignature() {
     const signatureOutput = document.getElementById("signatureOutput");
+    if (!signatureOutput.innerHTML) {
+        alert("Najpierw wygeneruj stopkę!");
+        return;
+    }
+    
     const range = document.createRange();
     range.selectNodeContents(signatureOutput);
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
     document.execCommand("copy");
-    alert("Stopka skopiowana do schowka!");
+    alert("Stopka (widok sformatowany) skopiowana do schowka!");
+}
+
+function copySignatureAsHTML() {
+    if (!window.currentSignatureHTML) {
+        alert("Najpierw wygeneruj stopkę!");
+        return;
+    }
+    
+    // Tworzymy tymczasowy element textarea i kopiujemy czysty HTML
+    const tempTextarea = document.createElement("textarea");
+    tempTextarea.value = window.currentSignatureHTML;
+    tempTextarea.style.position = "fixed";
+    tempTextarea.style.opacity = "0";
+    document.body.appendChild(tempTextarea);
+    tempTextarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempTextarea);
+    
+    alert("Surowy kod HTML stopki skopiowany do schowka!\nMożesz go wkleić bezpośrednio w edytorze podpisu.");
 }
 </script>
 
