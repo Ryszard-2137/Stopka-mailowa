@@ -98,7 +98,6 @@
     </button>
 </div>
 
-<!-- Instrukcje i zgłoszenie -->
 <a href="https://support.microsoft.com/pl-pl/office/twórca-i-dodawanie-podpisu-e-mail-w-programie-outlook-8ee5d4f4-68fd-464a-a1c1-0e1c80bb27f2#PickTab=Classic_Outlook" target="_blank" style="text-decoration: none;">
     <button style="margin: 10px 10px 0 0; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer;">
         Instrukcja Outlook
@@ -117,6 +116,30 @@
 
 <script>
 let currentSignatureHTML = '';
+
+const CORRECT_HASH = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824";
+
+async function checkPassword() {
+    const input = document.getElementById("passInput").value;
+    const error = document.getElementById("errorMsg");
+
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    if (hashHex === CORRECT_HASH) {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+    } else {
+        error.textContent = "Nieprawidłowe hasło";
+    }
+}
+
+document.getElementById("passInput").addEventListener("keypress", e => {
+    if (e.key === "Enter") checkPassword();
+});
 
 function generateSignature() {
     const title = document.getElementById("title").value.trim();
@@ -196,24 +219,9 @@ function copySignatureAsHTML() {
         alert("Nie udało się skopiować – spróbuj ręcznie zaznaczyć kod.");
     });
 }
-
-function checkPassword() {
-    const input = document.getElementById("passInput").value;
-    const error = document.getElementById("errorMsg");
-    if (input === "kochamPANS") {
-        document.getElementById("loginScreen").style.display = "none";
-        document.getElementById("mainContent").style.display = "block";
-    } else {
-        error.textContent = "Nieprawidłowe hasło";
-    }
-}
-
-document.getElementById("passInput").addEventListener("keypress", e => {
-    if (e.key === "Enter") checkPassword();
-});
 </script>
 
-</div> <!-- koniec mainContent -->
+</div>
 
 </body>
 </html>
