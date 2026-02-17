@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pl">
+<script>
+// Najpierw pytamy o hasło
+const password = prompt("Podaj hasło, aby zobaczyć generator stopki:");
+
+if (password !== "kochamPANS") {
+    document.body.innerHTML = `
+        <h1 style="text-align:center; margin-top:100px; color:#c00;">
+            Nieprawidłowe hasło 😐<br><br>
+            Strona zostanie odświeżona po 3 sekundach...
+        </h1>
+    `;
+    setTimeout(() => location.reload(), 3000);
+} else {
+    // Hasło poprawne → normalnie ładujemy resztę strony
+    document.addEventListener("DOMContentLoaded", function() {
+        // tu nic nie trzeba – reszta strony już jest w HTML
+    });
+}
+</script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Stopki</title>
+</head>
+<body>
+
+<h2>Formularz do wprowadzenia danych stopki</h2>
+<form id="signatureForm">
+    <label for="title">Tytuł naukowy:</label><br>
+    <input type="text" id="title" name="title"><br><br>
+
+    <label for="name">Imię i nazwisko:</label><br>
+    <input type="text" id="name" name="name"><br><br>
+
+    <label for="position">Stanowisko:</label><br>
+    <input type="text" id="position" name="position"><br><br>
+
+    <label for="department">Dział:</label><br>
+    <input type="text" id="department" name="department"><br><br>
+
+    <label for="phone">Numer telefonu:</label><br>
+    <input type="text" id="phone" name="phone"><br><br>
+
+    <label for="email">Adres e-mail:</label><br>
+    <input type="email" id="email" name="email"><br><br>
+
+    <button type="button" onclick="generateSignature()" style="padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer;">Generuj Stopkę</button>
+</form>
+
+<h2>Wygenerowana stopka:</h2>
+<div id="signatureOutput" style="padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px;"></div>
+
+<div style="margin-top: 15px;">
+    <button onclick="copySignature()" style="padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer;">
+        Skopiuj Stopkę
+    </button>
+    
+    <button onclick="copySignatureAsHTML()" style="padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #2e7d32; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+        Skopiuj jako HTML
+    </button>
+</div>
+
+<!-- Przyciski z instrukcjami -->
+<a href="https://support.microsoft.com/pl-pl/office/twórca-i-dodawanie-podpisu-e-mail-w-programie-outlook-8ee5d4f4-68fd-464a-a1c1-0e1c80bb27f2#PickTab=Classic_Outlook" target="_blank" style="text-decoration: none;">
+    <button style="margin-top: 10px; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer;">
+        Instrukcja dodania podpisu w Outlook
+    </button>
+</a>
+<a href="https://support.google.com/mail/answer/8395?hl=PL&ref_topic=3394219" target="_blank" style="text-decoration: none;">
+    <button style="margin-top: 10px; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer;">
+        Instrukcja dodania podpisu w Gmail
+    </button>
+</a>
+
+<!-- Przycisk Zgłoś problem -->
+<a href="mailto:r.lukowczyk@pans.glogow.pl?subject=Problem%20z%20stopką" style="text-decoration: none;">
+    <button style="margin-top: 10px; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #22346c; border: none; border-radius: 5px; cursor: pointer;">
+        Zgłoś problem
+    </button>
+</a>
+
+<script>
+function generateSignature() {
+    const title = document.getElementById("title").value;
+    const name = document.getElementById("name").value;
+    const position = document.getElementById("position").value;
+    const department = document.getElementById("department").value;
+    const phone = document.getElementById("phone").value;
+    const email = document.getElementById("email").value;
+
+    const signatureHTML = `
+    <table cellpadding="0" cellspacing="0" border="0" style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;">
+        <tbody>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" border="0" style="vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;">
+                        <tbody>
+                            <tr>
+                                <td width="150" style="vertical-align: middle;">
+                                    <span style="margin-right: 20px; display: block;">
+                                        <img src="https://pans.glogow.pl/wp-content/uploads/logo/logo_pans_mail.png" role="presentation" width="130" style="max-width: 130px;">
+                                    </span>
+                                </td>
+                                <td style="vertical-align: middle;">
+                                    <h2 style="margin: 0px; font-size: 18px; color: rgb(0, 0, 0); font-weight: 600;">
+                                        <span>${title ? title + " " : ""}${name}</span>
+                                    </h2>
+                                    <p style="margin: 0px; color: rgb(0, 0, 0); font-size: 14px; line-height: 22px;">
+                                        <span>${position}</span>
+                                    </p>
+                                    <p style="margin: 0px; font-weight: 500; color: rgb(0, 0, 0); font-size: 14px; line-height: 22px;">
+                                        <span>${department}</span><span> | </span><span>Państwowa Akademia Nauk Stosowanych w Głogowie</span>
+                                    </p>
+                                    <p style="color: rgb(0, 0, 0); margin: 0px; font-size: 14px; line-height: 22px;">
+                                        <span>NIP: 6932045180</span>
+                                    </p>
+                                </td>
+                                <td width="30"><div style="width: 30px;"></div></td>
+                                <td style="width: 1px; border-left: 1px solid rgb(34, 52, 108);"></td>
+                                <td width="30"><div style="width: 30px;"></div></td>
+                                <td style="vertical-align: middle;">
+                                    <table cellpadding="0" cellspacing="0" border="0" style="font-size: medium; font-family: Arial;">
+                                        <tbody>
+                                            <tr height="25" style="vertical-align: middle;">
+                                                <td width="30" style="vertical-align: middle;">
+                                                    <img src="https://pans.glogow.pl/wp-content/uploads/logo/telefon.png" alt="mobilePhone" width="13" style="display: block;">
+                                                </td>
+                                                <td style="padding: 0px; color: rgb(0, 0, 0);">
+                                                    <a href="tel:${phone}" style="text-decoration: none; color: rgb(0, 0, 0); font-size: 14px;">
+                                                        <span>${phone}</span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr height="25" style="vertical-align: middle;">
+                                                <td width="30" style="vertical-align: middle;">
+                                                    <img src="https://pans.glogow.pl/wp-content/uploads/logo/mail.png" alt="emailAddress" width="13" style="display: block;">
+                                                </td>
+                                                <td style="padding: 0px;">
+                                                    <a href="mailto:${email}" style="text-decoration: none; color: rgb(0, 0, 0); font-size: 14px;">
+                                                        <span>${email}</span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr height="25" style="vertical-align: middle;">
+                                                <td width="30" style="vertical-align: middle;">
+                                                    <img src="https://pans.glogow.pl/wp-content/uploads/logo/www.png" alt="website" width="13" style="display: block;">
+                                                </td>
+                                                <td style="padding: 0px;">
+                                                    <a href="https://www.pans.glogow.pl" style="text-decoration: none; color: rgb(0, 0, 0); font-size: 14px;">
+                                                        <span>www.pans.glogow.pl</span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr height="25" style="vertical-align: middle;">
+                                                <td width="30" style="vertical-align: middle;">
+                                                    <img src="https://pans.glogow.pl/wp-content/uploads/logo/adres.png" alt="address" width="13" style="display: block;">
+                                                </td>
+                                                <td style="padding: 0px;">
+                                                    <span style="font-size: 14px; color: rgb(0, 0, 0);">67-200 Głogów, Piotra Skargi 5</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; vertical-align: -webkit-baseline-middle; font-size: medium; font-family: Arial;">
+                        <tbody>
+                            <tr><td height="30"></td></tr>
+                            <tr>
+                                <td style="width: 100%; border-bottom: 1px solid rgb(34, 52, 108); display: block;"></td>
+                            </tr>
+                            <tr><td height="30"></td></tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>`;
+
+    document.getElementById("signatureOutput").innerHTML = signatureHTML;
+    
+    // Zapisujemy czysty HTML do zmiennej globalnej, żeby łatwo skopiować
+    window.currentSignatureHTML = signatureHTML.trim();
+}
+
+function copySignature() {
+    const signatureOutput = document.getElementById("signatureOutput");
+    if (!signatureOutput.innerHTML) {
+        alert("Najpierw wygeneruj stopkę!");
+        return;
+    }
+    
+    const range = document.createRange();
+    range.selectNodeContents(signatureOutput);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    alert("Stopka (widok sformatowany) skopiowana do schowka!");
+}
+
+function copySignatureAsHTML() {
+    if (!window.currentSignatureHTML) {
+        alert("Najpierw wygeneruj stopkę!");
+        return;
+    }
+    
+    // Tworzymy tymczasowy element textarea i kopiujemy czysty HTML
+    const tempTextarea = document.createElement("textarea");
+    tempTextarea.value = window.currentSignatureHTML;
+    tempTextarea.style.position = "fixed";
+    tempTextarea.style.opacity = "0";
+    document.body.appendChild(tempTextarea);
+    tempTextarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempTextarea);
+    
+    alert("Surowy kod HTML stopki skopiowany do schowka!\nMożesz go wkleić bezpośrednio w edytorze podpisu.");
+}
+</script>
+
+</body>
+</html>
